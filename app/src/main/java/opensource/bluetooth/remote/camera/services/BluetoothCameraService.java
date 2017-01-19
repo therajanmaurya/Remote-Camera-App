@@ -339,6 +339,10 @@ public class BluetoothCameraService {
                                 // Situation normal. Start the connected thread.
                                 connected(socket, socket.getRemoteDevice(),
                                         mSocketType);
+                                Constants.DEVICE_TYPE = true;
+                                if (Constants.DEVICE_TYPE) {
+                                    Log.d("Device is Client", "True");
+                                }
                                 break;
                             case STATE_NONE:
                             case STATE_CONNECTED:

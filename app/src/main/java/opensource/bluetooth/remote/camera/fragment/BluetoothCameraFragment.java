@@ -51,25 +51,9 @@ public class BluetoothCameraFragment extends Fragment {
     private Button mSendButton;
 
     private String mConnectedDeviceName = null;
-
-    /**
-     * Array adapter for the conversation thread
-     */
     private ArrayAdapter<String> mConversationArrayAdapter;
-
-    /**
-     * String buffer for outgoing messages
-     */
     private StringBuffer mOutStringBuffer;
-
-    /**
-     * Local Bluetooth adapter
-     */
     private BluetoothAdapter mBluetoothAdapter = null;
-
-    /**
-     * Member object for the chat services
-     */
     private BluetoothCameraService mChatService = null;
 
     @Override
@@ -86,7 +70,6 @@ public class BluetoothCameraFragment extends Fragment {
             activity.finish();
         }
     }
-
 
     @Override
     public void onStart() {

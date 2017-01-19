@@ -18,4 +18,6 @@ public class Constants {
     // Key names received from the BluetoothCameraService Handler
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
+
+    public static boolean DEVICE_TYPE = false;
 }
