@@ -20,4 +20,7 @@ public class Constants {
     public static final String TOAST = "toast";
 
     public static boolean DEVICE_TYPE = false;
+
+    // IDEAL = 0, CLIENT = 1, SERVER  = 2
+    public static int IS_IDEAL_CLIENT_SERVER = 0;
 }

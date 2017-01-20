@@ -339,10 +339,8 @@ public class BluetoothCameraService {
                                 // Situation normal. Start the connected thread.
                                 connected(socket, socket.getRemoteDevice(),
                                         mSocketType);
-                                Constants.DEVICE_TYPE = true;
-                                if (Constants.DEVICE_TYPE) {
-                                    Log.d("Device is Client", "True");
-                                }
+                                // Now this user is server
+                                Constants.IS_IDEAL_CLIENT_SERVER = 2;
                                 break;
                             case STATE_NONE:
                             case STATE_CONNECTED:
@@ -415,6 +413,8 @@ public class BluetoothCameraService {
                 // This is a blocking call and will only return on a
                 // successful connection or an exception
                 mmSocket.connect();
+                //Now User is Client
+                Constants.IS_IDEAL_CLIENT_SERVER = 1;
             } catch (IOException e) {
                 // Close the socket
                 try {
@@ -480,6 +480,7 @@ public class BluetoothCameraService {
             // Keep listening to the InputStream while connected
             while (mState == STATE_CONNECTED) {
                 try {
+
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
 
