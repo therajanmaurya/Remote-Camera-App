@@ -29,9 +29,6 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
 
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    Camera2ServerFragment fragment = new Camera2ServerFragment();
-    Camera2Fragment camera2Fragment = new Camera2Fragment();
-
     // Intent request codes
     private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
@@ -42,13 +39,19 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
     private BluetoothAdapter mBluetoothAdapter = null;
     private BluetoothCameraService mChatService = null;
 
+    private Camera2Fragment cameraClient;
+    private Camera2ServerFragment cameraServer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        Toast.makeText(this, "Please select a device", Toast.LENGTH_SHORT).show();
+        cameraClient = new Camera2Fragment();
+        cameraServer = new Camera2ServerFragment();
+
+        Toast.makeText(this, "Please select a device and Device is " + Constants.IS_IDEAL_CLIENT_SERVER, Toast.LENGTH_SHORT).show();
 
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -62,23 +65,21 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
 
     @Override
     public void updateOutput(SurfaceTexture surfaceTexture) {
-        camera2Fragment.updateCameraBitMap(surfaceTexture);
+        cameraClient.updateCameraBitMap(surfaceTexture);
     }
 
     public void updateUI() {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         switch (Constants.IS_IDEAL_CLIENT_SERVER) {
             case 0:
-                Toast.makeText(this, "Please select a device", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please select a device and Device is " + Constants.IS_IDEAL_CLIENT_SERVER, Toast.LENGTH_SHORT).show();
                 break;
             case 1:
-                replaceFragment(fragment, true, R.id.fragment);
+                replaceFragment(cameraClient, false, R.id.fragment);
                 break;
             case 2:
-                replaceFragment(camera2Fragment, true, R.id.fragment);
+                replaceFragment(cameraServer, false, R.id.fragment);
                 break;
         }
-        transaction.commitAllowingStateLoss();
     }
 
     @OnClick(R.id.fb_add)
@@ -224,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
                     switch (msg.arg1) {
                         case BluetoothCameraService.STATE_CONNECTED:
                             setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
-                            //mConversationArrayAdapter.clear();
+                            updateUI();
                             break;
                         case BluetoothCameraService.STATE_CONNECTING:
                             setStatus(R.string.title_connecting);
@@ -267,14 +268,12 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
                 // When DeviceListActivity returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
                     connectDevice(data, true);
-                    updateUI();
                 }
                 break;
             case REQUEST_CONNECT_DEVICE_INSECURE:
                 // When DeviceListActivity returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
                     connectDevice(data, false);
-                    updateUI();
                 }
                 break;
             case REQUEST_ENABLE_BT:
@@ -322,5 +321,7 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
             }
             transaction.commitNowAllowingStateLoss();
         }
+
+        Toast.makeText(this, "Please select a device and Device is " + Constants.IS_IDEAL_CLIENT_SERVER, Toast.LENGTH_SHORT).show();
     }
 }
