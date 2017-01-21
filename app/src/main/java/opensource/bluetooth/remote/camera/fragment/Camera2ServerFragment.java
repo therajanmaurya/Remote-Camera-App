@@ -53,6 +53,7 @@ import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.Surface;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -71,12 +72,11 @@ import java.util.concurrent.TimeUnit;
 
 import opensource.bluetooth.remote.camera.MainActivity;
 import opensource.bluetooth.remote.camera.R;
-import opensource.bluetooth.remote.camera.interfaces.StreamCameraBitMap;
+import opensource.bluetooth.remote.camera.interfaces.UpdateOutput;
 import opensource.bluetooth.remote.camera.view.AutoFitTextureView;
 
-public class Camera2Fragment extends android.support.v4.app.Fragment
-        implements View.OnClickListener, FragmentCompat.OnRequestPermissionsResultCallback,
-        StreamCameraBitMap {
+public class Camera2ServerFragment extends android.support.v4.app.Fragment
+        implements View.OnClickListener, FragmentCompat.OnRequestPermissionsResultCallback {
 
     /**
      * Conversion from screen rotation to JPEG orientation.
@@ -131,6 +131,36 @@ public class Camera2Fragment extends android.support.v4.app.Fragment
      * Max preview height that is guaranteed by Camera2 API
      */
     private static final int MAX_PREVIEW_HEIGHT = 1080;
+
+    /**
+     * {@link TextureView.SurfaceTextureListener} handles several lifecycle events on a
+     * {@link TextureView}.
+     */
+    private final TextureView.SurfaceTextureListener mSurfaceTextureListener
+            = new TextureView.SurfaceTextureListener() {
+
+        @Override
+        public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
+            openCamera(width, height);
+
+        }
+
+        @Override
+        public void onSurfaceTextureSizeChanged(SurfaceTexture texture, int width, int height) {
+            configureTransform(width, height);
+        }
+
+        @Override
+        public boolean onSurfaceTextureDestroyed(SurfaceTexture texture) {
+            return true;
+        }
+
+        @Override
+        public void onSurfaceTextureUpdated(SurfaceTexture texture) {
+            ((UpdateOutput)getActivity()).updateOutput(texture);
+        }
+
+    };
 
     /**
      * ID of the current {@link CameraDevice}.
@@ -310,15 +340,15 @@ public class Camera2Fragment extends android.support.v4.app.Fragment
 
         @Override
         public void onCaptureProgressed(@NonNull CameraCaptureSession session,
-                @NonNull CaptureRequest request,
-                @NonNull CaptureResult partialResult) {
+                                        @NonNull CaptureRequest request,
+                                        @NonNull CaptureResult partialResult) {
             process(partialResult);
         }
 
         @Override
         public void onCaptureCompleted(@NonNull CameraCaptureSession session,
-                @NonNull CaptureRequest request,
-                @NonNull TotalCaptureResult result) {
+                                       @NonNull CaptureRequest request,
+                                       @NonNull TotalCaptureResult result) {
             process(result);
         }
 
@@ -370,7 +400,7 @@ public class Camera2Fragment extends android.support.v4.app.Fragment
             if (option.getWidth() <= maxWidth && option.getHeight() <= maxHeight &&
                     option.getHeight() == option.getWidth() * h / w) {
                 if (option.getWidth() >= textureViewWidth &&
-                        option.getHeight() >= textureViewHeight) {
+                    option.getHeight() >= textureViewHeight) {
                     bigEnough.add(option);
                 } else {
                     notBigEnough.add(option);
@@ -390,13 +420,13 @@ public class Camera2Fragment extends android.support.v4.app.Fragment
         }
     }
 
-    public static Camera2Fragment newInstance() {
-        return new Camera2Fragment();
+    public static Camera2ServerFragment newInstance() {
+        return new Camera2ServerFragment();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_camera, container, false);
     }
 
@@ -424,7 +454,7 @@ public class Camera2Fragment extends android.support.v4.app.Fragment
         if (mTextureView.isAvailable()) {
             openCamera(mTextureView.getWidth(), mTextureView.getHeight());
         } else {
-            //mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+            mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
         }
     }
 
@@ -446,7 +476,7 @@ public class Camera2Fragment extends android.support.v4.app.Fragment
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-            @NonNull int[] grantResults) {
+                                           @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
             if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 ErrorDialog.newInstance(getString(R.string.request_permission))
@@ -811,8 +841,8 @@ public class Camera2Fragment extends android.support.v4.app.Fragment
 
                 @Override
                 public void onCaptureCompleted(@NonNull CameraCaptureSession session,
-                        @NonNull CaptureRequest request,
-                        @NonNull TotalCaptureResult result) {
+                                               @NonNull CaptureRequest request,
+                                               @NonNull TotalCaptureResult result) {
                     showToast("Saved: " + mFile);
                     Log.d(TAG, mFile.toString());
                     unlockFocus();
@@ -876,11 +906,6 @@ public class Camera2Fragment extends android.support.v4.app.Fragment
             requestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
                     CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
         }
-    }
-
-    @Override
-    public void updateCameraBitMap(SurfaceTexture surfaceTexture) {
-        mTextureView.setSurfaceTexture(surfaceTexture);
     }
 
     /**
