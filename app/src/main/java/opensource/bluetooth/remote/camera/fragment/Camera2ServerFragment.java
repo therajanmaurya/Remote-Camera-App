@@ -157,6 +157,7 @@ public class Camera2ServerFragment extends android.support.v4.app.Fragment
 
         @Override
         public void onSurfaceTextureUpdated(SurfaceTexture texture) {
+
         }
 
     };
@@ -239,6 +240,8 @@ public class Camera2ServerFragment extends android.support.v4.app.Fragment
      */
     private File mFile;
 
+    public boolean buttonClick = false;
+
     /**
      * This a callback object for the {@link ImageReader}. "onImageAvailable" will be called when a
      * still image is ready to be saved.
@@ -296,6 +299,7 @@ public class Camera2ServerFragment extends android.support.v4.app.Fragment
                 case STATE_PREVIEW: {
                     // We have nothing to do when the camera preview is working normally.
                     Log.d(TAG, "Preview Camera Result");
+                    //mBackgroundHandler.post(new ImageSaver(mImageReader.acquireNextImage(), mFile));
                     break;
                 }
                 case STATE_WAITING_LOCK: {
@@ -350,7 +354,6 @@ public class Camera2ServerFragment extends android.support.v4.app.Fragment
                                        @NonNull CaptureRequest request,
                                        @NonNull TotalCaptureResult result) {
             process(result);
-            ((UpdateOutput)getActivity()).updateOutput(session);
         }
 
     };
@@ -896,6 +899,7 @@ public class Camera2ServerFragment extends android.support.v4.app.Fragment
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.fb_camera: {
+                buttonClick = true;
                 takePicture();
                 break;
             }
@@ -912,7 +916,7 @@ public class Camera2ServerFragment extends android.support.v4.app.Fragment
     /**
      * Saves a JPEG {@link Image} into the specified {@link File}.
      */
-    private static class ImageSaver implements Runnable {
+    private class ImageSaver implements Runnable {
 
         /**
          * The JPEG image
@@ -933,10 +937,14 @@ public class Camera2ServerFragment extends android.support.v4.app.Fragment
             ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
             byte[] bytes = new byte[buffer.remaining()];
             buffer.get(bytes);
+            ((UpdateOutput) getActivity()).updateOutput(bytes);
             FileOutputStream output = null;
             try {
-                output = new FileOutputStream(mFile);
-                output.write(bytes);
+                if (buttonClick) {
+                    output = new FileOutputStream(mFile);
+                    output.write(bytes);
+                    buttonClick = false;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {

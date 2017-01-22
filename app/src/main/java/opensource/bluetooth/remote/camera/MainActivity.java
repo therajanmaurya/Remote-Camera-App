@@ -7,7 +7,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.hardware.camera2.CameraCaptureSession;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,7 +20,7 @@ import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import opensource.bluetooth.remote.camera.activity.DeviceListActivity;
-import opensource.bluetooth.remote.camera.fragment.Camera2Fragment;
+import opensource.bluetooth.remote.camera.fragment.Camera2ClientFragment;
 import opensource.bluetooth.remote.camera.fragment.Camera2ServerFragment;
 import opensource.bluetooth.remote.camera.interfaces.UpdateOutput;
 import opensource.bluetooth.remote.camera.services.BluetoothCameraService;
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
     private BluetoothAdapter mBluetoothAdapter = null;
     private BluetoothCameraService mChatService = null;
 
-    private Camera2Fragment cameraClient;
+    private Camera2ClientFragment cameraClient;
     private Camera2ServerFragment cameraServer;
 
     @Override
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        cameraClient = new Camera2Fragment();
+        cameraClient = new Camera2ClientFragment();
         cameraServer = new Camera2ServerFragment();
 
         Toast.makeText(this, "Please select a device and Device is " + Constants.IS_IDEAL_CLIENT_SERVER, Toast.LENGTH_SHORT).show();
@@ -64,8 +64,8 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
     }
 
     @Override
-    public void updateOutput(CameraCaptureSession cameraCaptureSession) {
-       sendMessage("session", cameraCaptureSession);
+    public void updateOutput(byte[] bytes) {
+       sendMessage("session", bytes);
     }
 
     public void updateUI() {
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
      *
      * @param message A string of text to send.
      */
-    private void sendMessage(String message, CameraCaptureSession cameraCaptureSession) {
+    private void sendMessage(String message, byte[] bytes) {
         // Check that we're actually connected before trying anything
         if (mChatService.getState() != BluetoothCameraService.STATE_CONNECTED) {
             Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
@@ -177,11 +177,13 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
         }
         message = "This is Message to client"
                 + "";
+
         // Check that there's actually something to send
         if (message.length() > 0) {
             // Get the message bytes and tell the BluetoothCameraService to write
             byte[] send = message.getBytes();
-            mChatService.write(send);
+
+            mChatService.write(bytes);
 
             // Reset out string buffer to zero and clear the edit text field
             mOutStringBuffer.setLength(0);
@@ -248,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
                     Log.d("Coming Data", readMessage);
-                    //cameraClient.updateCameraBitMap(captureSession);
+                    cameraClient.updateBitmapImage(BitmapFactory.decodeByteArray(readBuf, 0, readBuf.length));
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name

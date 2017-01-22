@@ -1,10 +1,8 @@
 package opensource.bluetooth.remote.camera;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import android.media.Image;
+
+import java.nio.ByteBuffer;
 
 /**
  * Created by Rajan Maurya on 22/01/17.
@@ -12,20 +10,18 @@ import java.io.ObjectOutputStream;
 
 public class Utils {
 
-    public static byte[] serialize(Object obj) throws IOException {
-        try(ByteArrayOutputStream b = new ByteArrayOutputStream()){
-            try(ObjectOutputStream o = new ObjectOutputStream(b)){
-                o.writeObject(obj);
-            }
-            return b.toByteArray();
-        }
-    }
+    private byte[] convertYUV420ToNV21(Image imgYUV420) {
+        byte[] rez;
 
-    public static Object deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
-        try(ByteArrayInputStream b = new ByteArrayInputStream(bytes)){
-            try(ObjectInputStream o = new ObjectInputStream(b)){
-                return o.readObject();
-            }
-        }
+        ByteBuffer buffer0 = imgYUV420.getPlanes()[0].getBuffer();
+        ByteBuffer buffer2 = imgYUV420.getPlanes()[2].getBuffer();
+        int buffer0_size = buffer0.remaining();
+        int buffer2_size = buffer2.remaining();
+        rez = new byte[buffer0_size + buffer2_size];
+
+        buffer0.get(rez, 0, buffer0_size);
+        buffer2.get(rez, buffer0_size, buffer2_size);
+
+        return rez;
     }
 }

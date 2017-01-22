@@ -1,5 +1,6 @@
 package opensource.bluetooth.remote.camera.interfaces;
 
+import android.graphics.Bitmap;
 import android.hardware.camera2.CameraCaptureSession;
 
 /**
@@ -9,4 +10,6 @@ import android.hardware.camera2.CameraCaptureSession;
 public interface StreamCameraBitMap {
 
     void updateCameraBitMap(CameraCaptureSession cameraCaptureSession);
+
+    void updateBitmapImage(Bitmap bitmap);
 }
