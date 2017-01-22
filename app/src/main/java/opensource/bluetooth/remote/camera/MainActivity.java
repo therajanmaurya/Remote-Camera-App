@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
@@ -250,7 +251,8 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
                     Log.d("Coming Data", readMessage);
-                    cameraClient.updateBitmapImage(BitmapFactory.decodeByteArray(readBuf, 0, readBuf.length));
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(readBuf, 0, readBuf.length);
+                    cameraClient.updateBitmapImage(bitmap);
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name
