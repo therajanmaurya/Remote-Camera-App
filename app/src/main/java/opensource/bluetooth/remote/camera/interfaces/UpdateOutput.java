@@ -1,6 +1,6 @@
 package opensource.bluetooth.remote.camera.interfaces;
 
-import android.graphics.SurfaceTexture;
+import android.hardware.camera2.CameraCaptureSession;
 
 /**
  * Created by Rajan Maurya on 21/01/17.
@@ -8,5 +8,5 @@ import android.graphics.SurfaceTexture;
 
 public interface UpdateOutput {
 
-    void updateOutput(SurfaceTexture surfaceTexture);
+    void updateOutput(CameraCaptureSession cameraCaptureSession);
 }

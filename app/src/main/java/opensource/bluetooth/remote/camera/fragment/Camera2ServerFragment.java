@@ -95,7 +95,7 @@ public class Camera2ServerFragment extends android.support.v4.app.Fragment
     /**
      * Tag for the {@link Log}.
      */
-    private static final String TAG = "Camera2Fragment";
+    private static final String TAG = Camera2ServerFragment.class.getSimpleName();
 
     /**
      * Camera state: Showing camera preview.
@@ -157,7 +157,6 @@ public class Camera2ServerFragment extends android.support.v4.app.Fragment
 
         @Override
         public void onSurfaceTextureUpdated(SurfaceTexture texture) {
-            ((UpdateOutput)getActivity()).updateOutput(texture);
         }
 
     };
@@ -296,6 +295,7 @@ public class Camera2ServerFragment extends android.support.v4.app.Fragment
             switch (mState) {
                 case STATE_PREVIEW: {
                     // We have nothing to do when the camera preview is working normally.
+                    Log.d(TAG, "Preview Camera Result");
                     break;
                 }
                 case STATE_WAITING_LOCK: {
@@ -350,6 +350,7 @@ public class Camera2ServerFragment extends android.support.v4.app.Fragment
                                        @NonNull CaptureRequest request,
                                        @NonNull TotalCaptureResult result) {
             process(result);
+            ((UpdateOutput)getActivity()).updateOutput(session);
         }
 
     };

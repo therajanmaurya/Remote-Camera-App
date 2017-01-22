@@ -7,7 +7,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.SurfaceTexture;
+import android.hardware.camera2.CameraCaptureSession;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -64,8 +64,8 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
     }
 
     @Override
-    public void updateOutput(SurfaceTexture surfaceTexture) {
-        cameraClient.updateCameraBitMap(surfaceTexture);
+    public void updateOutput(CameraCaptureSession cameraCaptureSession) {
+       sendMessage("session", cameraCaptureSession);
     }
 
     public void updateUI() {
@@ -169,13 +169,14 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
      *
      * @param message A string of text to send.
      */
-    private void sendMessage(String message) {
+    private void sendMessage(String message, CameraCaptureSession cameraCaptureSession) {
         // Check that we're actually connected before trying anything
         if (mChatService.getState() != BluetoothCameraService.STATE_CONNECTED) {
             Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
             return;
         }
-
+        message = "This is Message to client"
+                + "";
         // Check that there's actually something to send
         if (message.length() > 0) {
             // Get the message bytes and tell the BluetoothCameraService to write
@@ -246,7 +247,8 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
-                    //mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
+                    Log.d("Coming Data", readMessage);
+                    //cameraClient.updateCameraBitMap(captureSession);
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name
