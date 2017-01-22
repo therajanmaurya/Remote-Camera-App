@@ -41,8 +41,6 @@ public class Camera2ClientFragment extends Fragment implements StreamCameraBitMa
 
     @Override
     public void updateBitmapImage(Bitmap bitmap) {
-        if (bitmap != null) {
-            ivStream.setImageBitmap(bitmap);
-        }
+        ivStream.setImageBitmap(bitmap);
     }
 }
