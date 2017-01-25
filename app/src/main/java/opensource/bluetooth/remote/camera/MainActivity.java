@@ -22,7 +22,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import opensource.bluetooth.remote.camera.activity.DeviceListActivity;
 import opensource.bluetooth.remote.camera.fragment.Camera2ClientFragment;
-import opensource.bluetooth.remote.camera.fragment.Camera2ServerFragment;
+import opensource.bluetooth.remote.camera.fragment.CameraFragment;
 import opensource.bluetooth.remote.camera.interfaces.UpdateOutput;
 import opensource.bluetooth.remote.camera.services.BluetoothCameraService;
 
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
     private BluetoothCameraService mChatService = null;
 
     private Camera2ClientFragment cameraClient;
-    private Camera2ServerFragment cameraServer;
+    private CameraFragment cameraServer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
         ButterKnife.bind(this);
 
         cameraClient = new Camera2ClientFragment();
-        cameraServer = new Camera2ServerFragment();
+        cameraServer = new CameraFragment();
 
         Toast.makeText(this, "Please select a device and Device is " + Constants.IS_IDEAL_CLIENT_SERVER, Toast.LENGTH_SHORT).show();
 
