@@ -165,8 +165,8 @@ public class CameraFragment extends Fragment implements View.OnTouchListener {
                     public void run() {
 
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        YuvImage yuvImage = new YuvImage(rxCameraData.cameraData, ImageFormat.NV21, 150, 150, null);
-                        yuvImage.compressToJpeg(new Rect(0, 0, 150, 150), 50, out);
+                        YuvImage yuvImage = new YuvImage(rxCameraData.cameraData, ImageFormat.NV21, 160, 120, null);
+                        yuvImage.compressToJpeg(new Rect(0, 0, 160, 120), 50, out);
                         byte[] imageBytes = out.toByteArray();
                         //Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
 
@@ -174,7 +174,7 @@ public class CameraFragment extends Fragment implements View.OnTouchListener {
 
                         ((UpdateOutput) getActivity()).updateOutput(imageBytes);
                     }
-                }, 100);
+                }, 30);
 
             }
         });
