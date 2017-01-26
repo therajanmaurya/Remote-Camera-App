@@ -252,7 +252,9 @@ public class MainActivity extends AppCompatActivity implements UpdateOutput {
                     String readMessage = new String(readBuf, 0, msg.arg1);
                     Log.d("Coming Data", readMessage);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(readBuf, 0, readBuf.length);
-                    cameraClient.updateBitmapImage(bitmap);
+                    if (bitmap != null) {
+                        cameraClient.updateBitmapImage(bitmap);
+                    }
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name

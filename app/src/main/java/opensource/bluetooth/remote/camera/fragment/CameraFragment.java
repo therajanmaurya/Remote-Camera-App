@@ -65,6 +65,7 @@ public class CameraFragment extends Fragment implements View.OnTouchListener {
     private RxCamera camera;
 
     View rootView;
+    long time;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -169,12 +170,13 @@ public class CameraFragment extends Fragment implements View.OnTouchListener {
                         yuvImage.compressToJpeg(new Rect(0, 0, 160, 120), 50, out);
                         byte[] imageBytes = out.toByteArray();
                         //Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-
-                        System.out.println("Writing data");
+                        Log.d(LOG_TAG, "" + (System.currentTimeMillis() - time));
+                        System.out.println("Writing data" + imageBytes.length);
+                        time = System.currentTimeMillis();
 
                         ((UpdateOutput) getActivity()).updateOutput(imageBytes);
                     }
-                }, 30);
+                }, 100);
 
             }
         });
