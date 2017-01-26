@@ -26,7 +26,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -482,11 +481,11 @@ public class BluetoothCameraService {
             while (mState == STATE_CONNECTED) {
                 try {
 
-                    DataInputStream dinput = new DataInputStream(mmInStream);
-                    dinput.readFully(buffer, 0, buffer.length);
+                    /*DataInputStream dinput = new DataInputStream(mmInStream);
+                    dinput.readFully(buffer, 0, buffer.length);*/
 
                     // Read from the InputStream
-                    bytes = dinput.read(buffer);
+                    bytes = mmInStream.read(buffer);
 
                     // Send the obtained bytes to the UI Activity
                     mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer)

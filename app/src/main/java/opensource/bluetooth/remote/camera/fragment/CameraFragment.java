@@ -8,6 +8,7 @@ import android.graphics.ImageFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
+import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -164,16 +165,16 @@ public class CameraFragment extends Fragment implements View.OnTouchListener {
                     public void run() {
 
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        YuvImage yuvImage = new YuvImage(rxCameraData.cameraData, ImageFormat.NV21, 176, 144, null);
-                        yuvImage.compressToJpeg(new Rect(0, 0, 176, 144), 50, out);
+                        YuvImage yuvImage = new YuvImage(rxCameraData.cameraData, ImageFormat.NV21, 150, 150, null);
+                        yuvImage.compressToJpeg(new Rect(0, 0, 150, 150), 50, out);
                         byte[] imageBytes = out.toByteArray();
-                        Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                        //Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
 
                         System.out.println("Writing data");
 
                         ((UpdateOutput) getActivity()).updateOutput(imageBytes);
                     }
-                }, 5000);
+                }, 100);
 
             }
         });
@@ -239,5 +240,19 @@ public class CameraFragment extends Fragment implements View.OnTouchListener {
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         return false;
+    }
+
+    public byte[] convertYuvToJpeg(byte[] data, Camera camera) {
+
+        YuvImage image = new YuvImage(data, ImageFormat.NV21,
+                camera.getParameters().getPreviewSize().width, camera.getParameters().getPreviewSize().height, null);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        int quality = 20; //set quality
+        image.compressToJpeg(new Rect(0, 0, camera.getParameters().getPreviewSize().width,
+                camera.getParameters().getPreviewSize().height), quality, baos);//this line decreases the image quality
+
+
+        return baos.toByteArray();
     }
 }
